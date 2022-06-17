@@ -1,0 +1,20 @@
+{
+	"name": "@jodu555/express-helpers",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "node test/index.js"
+	},
+	"keywords": [
+		"express-helpers",
+		"helpers",
+		"authentication",
+		"authorization",
+		"role-managment",
+		"auth",
+		"middlewares"
+	],
+	"author": "",
+	"license": "ISC"
+}
