@@ -17,6 +17,10 @@ class AuthenticationHelper {
     }
 
     setupDatabase() {
+        const len = {
+            min: 7,
+        }
+
         this.database.createTable('accounts', {
             options: {
                 PK: 'UUID',
