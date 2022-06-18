@@ -1,9 +1,11 @@
-const { Database } = require('@jodu555/mysqlapi');
-const database = Database.getDatabase();
-let autHelper = null;
+let database;
+let authHelper = null;
 const bcrypt = require('bcryptjs');
 
-const setAuthHelper = (h) => authHelper = h;
+const setAuthHelper = (h) => {
+    authHelper = h;
+    database = h.database;
+};
 
 const generateUUID = () => {
     var dt = new Date().getTime();

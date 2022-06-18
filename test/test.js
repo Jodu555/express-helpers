@@ -7,9 +7,9 @@ const database = Database.createDatabase('localhost', 'root', '', 'testhelpers')
 
 const app = express();
 
-const authHelper = new AuthenticationHelper(app, '/api/auth', database);
+const authHelper = new AuthenticationHelper(app, '/auth', database);
 authHelper.install();
 
 
 
-app.listen(3000, () => console.log('Server listening'));
+app.listen(3100, () => console.log('Server listening'));

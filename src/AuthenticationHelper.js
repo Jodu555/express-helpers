@@ -1,14 +1,78 @@
 class AuthenticationHelper {
-    constructor(app, apiAuthPath, database) {
+    constructor(app, apiAuthPath, database, additionalAccountColumns = {}, additionalAccountRegisterSchema = {}) {
         this.app = app;
         this.apiAuthPath = apiAuthPath;
         this.database = database;
+        this.additionalAccountColumns = additionalAccountColumns;
+        this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
         this.tokens = new Map();
     }
     install() {
+        this.setupDatabase()
         const { router, setAuthHelper } = require('./auth/index');
         setAuthHelper(this);
         this.app.use(this.apiAuthPath, router);
+    }
+
+    setupDatabase() {
+        this.database.createTable('accounts', {
+            options: {
+                PK: 'UUID',
+            },
+            'UUID': {
+                type: 'varchar(64)',
+                null: false,
+            },
+            'username': {
+                type: 'varchar(64)',
+                null: false,
+            },
+            'email': {
+                type: 'varchar(64)',
+                null: false,
+            },
+            'password': {
+                type: 'TEXT',
+                null: false,
+            },
+            ...additionalAccountColumns
+        });
+
+        const registerSchema = {
+            UUID: {
+                value: generateUUID,
+            },
+            username: {
+                anum: false,
+                max: 15,
+                ...len
+            },
+            email: {
+                email: true,
+                ...len,
+                max: 20,
+            },
+            password: {
+                ...len,
+                max: 100,
+            },
+            ...additionalAccountRegisterSchema
+        };
+
+        const loginSchema = {
+            username: {
+                anum: false,
+                max: 15,
+                ...len
+            },
+            password: {
+                ...len,
+                max: 100,
+            },
+        }
+
+        this.database.registerSchema('registerSchema', registerSchema, 'accounts');
+        this.database.registerSchema('loginSchema', loginSchema, 'accounts');
     }
 
     addToken(token, user) {
