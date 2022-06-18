@@ -4,7 +4,7 @@
 	"description": "A Little npm library to help with authentication 404 middlewares and other stuff",
 	"main": "index.js",
 	"scripts": {
-		"test": "node test/index.js"
+		"test": "node test/test.js"
 	},
 	"repository": {
 		"type": "git",
@@ -24,5 +24,12 @@
 	"bugs": {
 		"url": "https://github.com/Jodu555/express-helpers/issues"
 	},
-	"homepage": "https://github.com/Jodu555/express-helpers#readme"
+	"homepage": "https://github.com/Jodu555/express-helpers#readme",
+	"devDependencies": {
+		"express": "^4.18.1",
+		"@jodu555/mysqlapi": "^4.0.5"
+	},
+	"dependencies": {
+		"bcryptjs": "^2.4.3"
+	}
 }
