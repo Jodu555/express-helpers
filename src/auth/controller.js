@@ -1,7 +1,9 @@
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.getDatabase();
-const authManager = require('../../utils/authManager');
+let autHelper = null;
 const bcrypt = require('bcryptjs');
+
+const setAuthHelper = (h) => authHelper = h;
 
 const generateUUID = () => {
     var dt = new Date().getTime();
@@ -62,7 +64,7 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
     const token = req.credentials.token;
-    authManager.removeToken(token);
+    autHelper.removeToken(token);
     res.json({ message: 'Successfully logged out!' });
 };
 
@@ -79,5 +81,6 @@ module.exports = {
     register,
     login,
     logout,
-    info
+    info,
+    setAuthHelper
 }

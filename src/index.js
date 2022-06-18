@@ -1,5 +1,6 @@
-const AuthenticationHelper = require('./AuthenticationHelper');
+const { AuthenticationHelper, AuthenticationError } = require('./AuthenticationHelper');
 
 module.exports = {
     AuthenticationHelper,
+    AuthenticationError
 }

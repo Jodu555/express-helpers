@@ -1,16 +1,25 @@
 const express = require('express');
 const controller = require('./controller');
-const authManager = require('../../utils/authManager');
 const router = express.Router();
+let authHelper = null;
 
-router.get('/', (req, res) => {
-    res.json({ message: 'Auth-Router works just fine' });
-});
-router.post('/register', controller.register);
-router.post('/login', controller.login);
-router.get('/logout', authManager.authentication(), controller.logout);
-router.get('/info', authManager.authentication(), controller.info);
+
+const setAuthHelper = (h) => {
+    authHelper = h;
+    controller.setAuthHelper(h)
+
+    router.get('/', (req, res) => {
+        res.json({ message: 'Auth-Router works just fine' });
+    });
+
+    router.post('/register', controller.register);
+    router.post('/login', controller.login);
+    router.get('/logout', authHelper.authentication(), controller.logout);
+    router.get('/info', authHelper.authentication(), controller.info);
+
+};
 
 module.exports = {
     router,
+    setAuthHelper
 };

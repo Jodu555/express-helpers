@@ -1,17 +1,14 @@
 const express = require('express');
 
-const { middleware } = require('../src/index');
+const { AuthenticationHelper } = require('../src/index');
 
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.createDatabase('localhost', 'root', '', 'testhelpers');
 
 const app = express();
 
-app.use(middleware({
-    app,
-    apiAuthPath: '/api/auth',
-    database,
-}))
+const authHelper = new AuthenticationHelper(app, '/api/auth', database);
+authHelper.install();
 
 
 
