@@ -7,6 +7,7 @@ const database = Database.createDatabase('localhost', 'root', '', 'testhelpers')
 database.connect();
 
 const app = express();
+app.use(express.json());
 
 const authHelper = new AuthenticationHelper(app, '/auth', database);
 authHelper.install();

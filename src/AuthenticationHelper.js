@@ -50,8 +50,8 @@ class AuthenticationHelper {
             },
             username: {
                 anum: false,
+                min: 3,
                 max: 15,
-                ...len
             },
             email: {
                 email: true,

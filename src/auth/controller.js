@@ -12,6 +12,7 @@ const setAuthHelper = (h) => {
 
 const register = async (req, res, next) => {
     try {
+        console.log(database, req.body, database.getSchema('registerSchema'));
         const validation = database.getSchema('registerSchema').validate(req.body, true);
         const user = validation.object
 
