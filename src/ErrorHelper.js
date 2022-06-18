@@ -12,8 +12,6 @@ class ErrorHelper {
                 message: err.stack.split('\n')[0],
                 stack: err.stack,
             };
-            console.log(err, error);
-            console.log(database);
             let status = 500;
             if (err instanceof AuthenticationError)
                 status = 401;
