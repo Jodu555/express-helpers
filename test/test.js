@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { AuthenticationHelper } = require('../src/index');
+const { AuthenticationHelper, ErrorHelper } = require('../src/index');
 
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.createDatabase('localhost', 'root', '', 'testhelpers');
@@ -11,6 +11,10 @@ app.use(express.json());
 
 const authHelper = new AuthenticationHelper(app, '/auth', database);
 authHelper.install();
+
+
+const errorHelper = new ErrorHelper()
+app.use(errorHelper.install());
 
 
 
