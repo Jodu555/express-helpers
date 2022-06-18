@@ -1,3 +1,5 @@
+const { generateUUID } = require('./utils');
+
 class AuthenticationHelper {
     constructor(app, apiAuthPath, database, additionalAccountColumns = {}, additionalAccountRegisterSchema = {}) {
         this.app = app;
@@ -35,7 +37,7 @@ class AuthenticationHelper {
                 type: 'TEXT',
                 null: false,
             },
-            ...additionalAccountColumns
+            ...this.additionalAccountColumns
         });
 
         const registerSchema = {
@@ -56,7 +58,7 @@ class AuthenticationHelper {
                 ...len,
                 max: 100,
             },
-            ...additionalAccountRegisterSchema
+            ...this.additionalAccountRegisterSchema
         };
 
         const loginSchema = {

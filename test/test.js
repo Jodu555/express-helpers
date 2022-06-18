@@ -4,6 +4,7 @@ const { AuthenticationHelper } = require('../src/index');
 
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.createDatabase('localhost', 'root', '', 'testhelpers');
+database.connect();
 
 const app = express();
 
