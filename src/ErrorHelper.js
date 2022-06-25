@@ -5,8 +5,6 @@ class ErrorHelper {
 
     }
     install() {
-        const { Database } = require('@jodu555/mysqlapi');
-        const database = Database.getDatabase();
         return (err, req, res, next) => {
             const error = {
                 message: err.stack.split('\n')[0],
@@ -16,8 +14,16 @@ class ErrorHelper {
             if (err instanceof AuthenticationError)
                 status = 401;
 
-            if (err instanceof database.ParsingError)
-                status = 422;
+            try {
+                const { Database } = require('@jodu555/mysqlapi');
+                const database = Database.getDatabase();
+                if (err instanceof database.ParsingError)
+                    status = 422;
+            } catch (error) {
+
+            }
+
+
 
             if (process.env.NODE_ENV !== 'production') {
                 if (error.message.includes('notFound')) {
