@@ -18,7 +18,7 @@ class AuthenticationHelper {
 
     setupDatabase() {
         const len = {
-            min: 7,
+            min: 3,
         }
 
         this.database.createTable('accounts', {
