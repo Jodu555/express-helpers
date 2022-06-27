@@ -40,7 +40,7 @@ const login = async (req, res, next) => {
             if (await bcrypt.compare(user.password, result[0].password)) {
                 const token = generateUUID();
                 delete result[0].password;
-                authManager.addToken(token, result[0]);
+                authHelper.addToken(token, result[0]);
                 res.json({ token });
             } else {
                 next(new Error('Invalid password!'));
@@ -57,7 +57,7 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
     const token = req.credentials.token;
-    autHelper.removeToken(token);
+    authHelper.removeToken(token);
     res.json({ message: 'Successfully logged out!' });
 };
 
