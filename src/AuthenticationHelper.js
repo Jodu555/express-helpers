@@ -104,7 +104,7 @@ class AuthenticationHelper {
 
     authenticationFull(cb) {
         return (req, res, next) => {
-            const token = req.headers['auth-token'];
+            const token = req.headers['auth-token'] || req.query['auth-token'];
             if (token) {
                 if (this.getUser(token)) {
                     const user = this.getUser(token);

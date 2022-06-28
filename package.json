@@ -1,6 +1,6 @@
 {
 	"name": "@jodu555/express-helpers",
-	"version": "1.1.4",
+	"version": "1.1.5",
 	"description": "A Little npm library to help with authentication 404 middlewares and other stuff",
 	"main": "src/index.js",
 	"scripts": {
