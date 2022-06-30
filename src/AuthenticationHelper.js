@@ -5,6 +5,7 @@ class AuthenticationHelper {
         this.app = app;
         this.apiAuthPath = apiAuthPath;
         this.database = database;
+        this.options = { register: true };
         this.additionalAccountColumns = additionalAccountColumns;
         this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
         this.tokens = new Map();

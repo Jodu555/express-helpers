@@ -12,7 +12,7 @@ const setAuthHelper = (h) => {
         res.json({ message: 'Auth-Router works just fine' });
     });
 
-    router.post('/register', controller.register);
+    authHelper.options.register && router.post('/register', controller.register);
     router.post('/login', controller.login);
     router.get('/logout', authHelper.authentication(), controller.logout);
     router.get('/info', authHelper.authentication(), controller.info);
