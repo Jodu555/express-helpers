@@ -1,7 +1,16 @@
+const fs = require('fs');
 const { generateUUID } = require('./utils');
 
 class AuthenticationHelper {
-    constructor(app, apiAuthPath, database, additionalAccountColumns = {}, additionalAccountRegisterSchema = {}) {
+    /**
+     * @param  {Object} app
+     * @param  {String} apiAuthPath
+     * @param  {Object} database
+     * @param  {Boolean} accountFile=false
+     * @param  {Object} additionalAccountColumns={}
+     * @param  {Object} additionalAccountRegisterSchema={}
+     */
+    constructor(app, apiAuthPath, database, accountFile = false, additionalAccountColumns = {}, additionalAccountRegisterSchema = {}) {
         this.app = app;
         this.apiAuthPath = apiAuthPath;
         this.database = database;
@@ -11,7 +20,7 @@ class AuthenticationHelper {
         this.tokens = new Map();
     }
     install() {
-        this.setupDatabase()
+        this.database != null && this.setupDatabase()
         const { router, setAuthHelper } = require('./auth/index');
         setAuthHelper(this);
         this.app.use(this.apiAuthPath, router);
@@ -81,7 +90,10 @@ class AuthenticationHelper {
         this.database.registerSchema('registerSchema', registerSchema, 'accounts');
         this.database.registerSchema('loginSchema', loginSchema, 'accounts');
     }
-
+    /**
+     * @param  {String} token
+     * @param  {Object} user
+     */
     addToken(token, user) {
         this.tokens.forEach((value, key) => {
             if (JSON.stringify(value) == JSON.stringify(user)) {
@@ -90,11 +102,15 @@ class AuthenticationHelper {
         });
         this.tokens.set(token, user);
     }
-
+    /**
+     * @param  {String} token
+     */
     removeToken(token) {
         this.tokens.delete(token);
     }
-
+    /**
+     * @param  {String} token
+     */
     getUser(token) {
         return this.tokens.get(token);
     }

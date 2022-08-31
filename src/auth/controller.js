@@ -1,9 +1,14 @@
 let database;
 let authHelper = null;
+const fs = require('fs');
 const bcrypt = require('bcryptjs');
+const { AuthenticationHelper } = require('../AuthenticationHelper');
 const { generateUUID } = require('../utils');
 
 const setAuthHelper = (h) => {
+    /**
+     * @type {AuthenticationHelper}
+     */
     authHelper = h;
     database = h.database;
 };
