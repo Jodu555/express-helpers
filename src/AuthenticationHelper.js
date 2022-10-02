@@ -14,7 +14,7 @@ class AuthenticationHelper {
         this.app = app;
         this.apiAuthPath = apiAuthPath;
         this.database = database;
-        this.options = { register: true };
+        this.options = { register: true, allowMultipleSessions: false };
         this.additionalAccountColumns = additionalAccountColumns;
         this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
         this.tokens = new Map();
@@ -95,11 +95,13 @@ class AuthenticationHelper {
      * @param  {Object} user
      */
     addToken(token, user) {
-        this.tokens.forEach((value, key) => {
-            if (JSON.stringify(value) == JSON.stringify(user)) {
-                this.tokens.delete(key);
-            }
-        });
+        if (!this.options.allowMultipleSessions) {
+            this.tokens.forEach((value, key) => {
+                if (JSON.stringify(value) == JSON.stringify(user)) {
+                    this.tokens.delete(key);
+                }
+            });
+        }
         this.tokens.set(token, user);
     }
     /**
