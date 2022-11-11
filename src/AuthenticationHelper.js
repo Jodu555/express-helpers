@@ -148,14 +148,17 @@ class AuthenticationHelper {
      * @param  {String} token
      */
     async getUser(token) {
-        let user = null;
+        let user = undefined;
         if (this.options.authTokenStoreDatabase) {
-            const { UUID } = await this.database.get('authtokens').getOne({ TOKEN: token });
-            user = await this.database.get('accounts').getOne({ UUID });
+            const search = await this.database.get('authtokens').getOne({ TOKEN: token });
+            if (search) {
+                user = await this.database.get('accounts').getOne({ UUID: search.UUID });
+            }
         } else {
             user = this.tokens.get(token);
         }
-        delete user.password;
+        if (user)
+            delete user.password;
         return user;
     }
 
