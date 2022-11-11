@@ -155,6 +155,7 @@ class AuthenticationHelper {
         } else {
             user = this.tokens.get(token);
         }
+        delete user.password;
         return user;
     }
 

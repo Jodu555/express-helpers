@@ -41,8 +41,6 @@ authHelper.install(async (token, dbentry) => {
     );
 });
 
-authHelper.addToken('test', { UUID: 'dsudfhsuifbdgi', name: 'Jodu' })
-
 
 const errorHelper = new ErrorHelper()
 
