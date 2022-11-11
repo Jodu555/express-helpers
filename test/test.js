@@ -45,8 +45,11 @@ authHelper.addToken('test', { UUID: 'dsudfhsuifbdgi', name: 'Jodu' })
 
 
 const errorHelper = new ErrorHelper()
+
+app.get('/', authHelper.authentication(), (req, res) => {
+    res.json('Auth Route')
+})
+
 app.use(errorHelper.install());
-
-
 
 app.listen(3200, () => console.log('Server listening'));

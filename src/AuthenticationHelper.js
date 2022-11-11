@@ -158,8 +158,8 @@ class AuthenticationHelper {
         return user;
     }
 
-    async authentication() {
-        return await this.authenticationFull(() => true);
+    authentication() {
+        return this.authenticationFull(() => true);
     }
 
     authenticationFull(cb) {
