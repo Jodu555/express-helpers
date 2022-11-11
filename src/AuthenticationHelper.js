@@ -19,7 +19,7 @@ class AuthenticationHelper {
         this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
         this.tokens = new Map();
     }
-    install(onLogin, onRegister) {
+    install(onLogin = () => { }, onRegister = () => { }) {
         this.onLogin = onLogin;
         this.onRegister = onRegister;
         this.database != null && this.setupDatabase()
@@ -105,14 +105,14 @@ class AuthenticationHelper {
             });
         }
         this.tokens.set(token, user);
-        __tokenMapUpdate();
+        this.__tokenMapUpdate();
     }
     /**
      * @param  {String} token
      */
     removeToken(token) {
         this.tokens.delete(token);
-        __tokenMapUpdate();
+        this.__tokenMapUpdate();
     }
 
     __tokenMapUpdate() {

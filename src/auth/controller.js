@@ -25,7 +25,7 @@ const register = async (req, res, next) => {
         if (result.length == 0) {
             user.password = await bcrypt.hash(user.password, 8);
             await database.get('accounts').create(user);
-            authHelper.onLogin(user);
+            authHelper.onRegister(user);
 
             delete user.password;
             res.json(user);

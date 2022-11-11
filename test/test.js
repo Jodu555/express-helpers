@@ -13,7 +13,7 @@ const authHelper = new AuthenticationHelper(app, '/auth', database, false, {
     settings: 'varchar(64)',
     lastLogin: 'TEXT'
 });
-authHelper.options.register = false;
+authHelper.options.register = true;
 authHelper.install((token, dbentry) => {
     //Update lastLogin Time
     console.log('onLogin', token, dbentry);
@@ -30,4 +30,4 @@ app.use(errorHelper.install());
 
 
 
-app.listen(3100, () => console.log('Server listening'));
+app.listen(3200, () => console.log('Server listening'));
