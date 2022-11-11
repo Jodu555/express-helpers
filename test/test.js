@@ -14,6 +14,8 @@ const authHelper = new AuthenticationHelper(app, '/auth', database, false, {
     lastLogin: 'TEXT'
 });
 authHelper.options.register = true;
+authHelper.options.authTokenStoreDatabase = true;
+
 authHelper.install(async (token, dbentry) => {
     //Update lastLogin Time
     console.log('onLogin', token, dbentry);

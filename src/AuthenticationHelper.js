@@ -14,7 +14,7 @@ class AuthenticationHelper {
         this.app = app;
         this.apiAuthPath = apiAuthPath;
         this.database = database;
-        this.options = { register: true, allowMultipleSessions: false };
+        this.options = { register: true, allowMultipleSessions: false, authTokenStoreDatabase: false };
         this.additionalAccountColumns = additionalAccountColumns;
         this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
         this.tokens = new Map();
@@ -56,6 +56,22 @@ class AuthenticationHelper {
             ...this.additionalAccountColumns
         });
 
+        if (this.options.authTokenStoreDatabase) {
+            this.database.createTable('authtokens', {
+                options: {
+                    PK: 'TOKEN',
+                },
+                'TOKEN': {
+                    type: 'varchar(64)',
+                    null: false,
+                },
+                'UUID': {
+                    type: 'varchar(64)',
+                    null: false,
+                },
+            });
+        }
+
         const registerSchema = {
             UUID: {
                 value: generateUUID,
@@ -96,34 +112,50 @@ class AuthenticationHelper {
      * @param  {String} token
      * @param  {Object} user
      */
-    addToken(token, user) {
+    async addToken(token, user) {
         if (!this.options.allowMultipleSessions) {
-            this.tokens.forEach((value, key) => {
-                if (JSON.stringify(value) == JSON.stringify(user)) {
-                    this.tokens.delete(key);
+            if (this.options.authTokenStoreDatabase) {
+                const exist = this.database.get('authtokens').getOne({ UUID: user.UUID });
+                if (exist) {
+                    await this.removeToken(exist.TOKEN)
                 }
-            });
+            } else {
+                this.tokens.forEach(async (value, key) => {
+                    if (JSON.stringify(value) == JSON.stringify(user)) {
+                        await this.removeToken(key);
+                    }
+                });
+            }
         }
-        this.tokens.set(token, user);
-        this.__tokenMapUpdate();
+        if (this.options.authTokenStoreDatabase) {
+            await this.database.get('authtokens').create({ TOKEN: token, UUID: user.UUID });
+        } else {
+            this.tokens.set(token, user);
+        }
     }
     /**
      * @param  {String} token
      */
-    removeToken(token) {
-        this.tokens.delete(token);
-        this.__tokenMapUpdate();
-    }
-
-    __tokenMapUpdate() {
-        //Do here special logic to save the tokens to a file to have almost persistent storage
+    async removeToken(token) {
+        if (this.options.authTokenStoreDatabase) {
+            await this.database.get('authtokens').delete({ TOKEN: token });
+        } else {
+            this.tokens.delete(token);
+        }
     }
 
     /**
      * @param  {String} token
      */
-    getUser(token) {
-        return this.tokens.get(token);
+    async getUser(token) {
+        let user = null;
+        if (this.options.authTokenStoreDatabase) {
+            const { UUID } = await this.database.get('authtokens').getOne({ TOKEN: token });
+            user = await this.database.get('accounts').getOne({ UUID });
+        } else {
+            user = this.tokens.get(token);
+        }
+        return user;
     }
 
     authentication() {
@@ -131,11 +163,11 @@ class AuthenticationHelper {
     }
 
     authenticationFull(cb) {
-        return (req, res, next) => {
+        return async (req, res, next) => {
             const token = req.headers['auth-token'] || req.query['auth-token'];
             if (token) {
-                if (this.getUser(token)) {
-                    const user = this.getUser(token);
+                if (await this.getUser(token)) {
+                    const user = await this.getUser(token);
                     if (!cb || cb(user)) {
                         req.credentials = {
                             token,
