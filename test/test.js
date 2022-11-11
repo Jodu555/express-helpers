@@ -9,9 +9,18 @@ database.connect();
 const app = express();
 app.use(express.json());
 
-const authHelper = new AuthenticationHelper(app, '/auth', database);
+const authHelper = new AuthenticationHelper(app, '/auth', database, false, {
+    settings: 'varchar(64)',
+    lastLogin: 'TEXT'
+});
 authHelper.options.register = false;
-authHelper.install();
+authHelper.install((token, dbentry) => {
+    //Update lastLogin Time
+    console.log('onLogin', token, dbentry);
+}, (userobj) => {
+    console.log('onRegister', userobj);
+    //Maybe fill in programmatically any fields
+});
 
 authHelper.addToken('test', { UUID: 'dsudfhsuifbdgi', name: 'Jodu' })
 

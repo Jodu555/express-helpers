@@ -19,7 +19,9 @@ class AuthenticationHelper {
         this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
         this.tokens = new Map();
     }
-    install() {
+    install(onLogin, onRegister) {
+        this.onLogin = onLogin;
+        this.onRegister = onRegister;
         this.database != null && this.setupDatabase()
         const { router, setAuthHelper } = require('./auth/index');
         setAuthHelper(this);
@@ -103,13 +105,20 @@ class AuthenticationHelper {
             });
         }
         this.tokens.set(token, user);
+        __tokenMapUpdate();
     }
     /**
      * @param  {String} token
      */
     removeToken(token) {
         this.tokens.delete(token);
+        __tokenMapUpdate();
     }
+
+    __tokenMapUpdate() {
+        //Do here special logic to save the tokens to a file to have almost persistent storage
+    }
+
     /**
      * @param  {String} token
      */

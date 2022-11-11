@@ -25,6 +25,7 @@ const register = async (req, res, next) => {
         if (result.length == 0) {
             user.password = await bcrypt.hash(user.password, 8);
             await database.get('accounts').create(user);
+            authHelper.onLogin(user);
 
             delete user.password;
             res.json(user);
@@ -46,6 +47,7 @@ const login = async (req, res, next) => {
                 const token = generateUUID();
                 delete result[0].password;
                 authHelper.addToken(token, result[0]);
+                authHelper.onLogin(token, result[0]);
                 res.json({ token });
             } else {
                 next(new Error('Invalid password!'));
