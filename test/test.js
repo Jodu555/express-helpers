@@ -14,12 +14,29 @@ const authHelper = new AuthenticationHelper(app, '/auth', database, false, {
     lastLogin: 'TEXT'
 });
 authHelper.options.register = true;
-authHelper.install((token, dbentry) => {
+authHelper.install(async (token, dbentry) => {
     //Update lastLogin Time
     console.log('onLogin', token, dbentry);
-}, (userobj) => {
+    await database.get('accounts').update(
+        {
+            UUID: dbentry.UUID,
+        },
+        {
+            lastLogin: Date.now(),
+        }
+    );
+}, async (userobj) => {
     console.log('onRegister', userobj);
     //Maybe fill in programmatically any fields
+    await database.get('accounts').update(
+        {
+            UUID: userobj.UUID,
+        },
+        {
+            settings: JSON.stringify({ test: 124, devMode: false, initLang: 'GerDub' }),
+            lastLogin: Date.now()
+        }
+    );
 });
 
 authHelper.addToken('test', { UUID: 'dsudfhsuifbdgi', name: 'Jodu' })
