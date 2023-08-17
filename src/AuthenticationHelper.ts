@@ -1,16 +1,34 @@
+import { Application, NextFunction, Request, Response } from 'express';
+import { AuthClassController } from './auth/authClassController';
+
 const fs = require('fs');
 const { generateUUID } = require('./utils');
 
-class AuthenticationHelper {
-	/**
-	 * @param  {Object} app
-	 * @param  {String} apiAuthPath
-	 * @param  {Object} database
-	 * @param  {Boolean} accountFile=false
-	 * @param  {Object} additionalAccountColumns={}
-	 * @param  {Object} additionalAccountRegisterSchema={}
-	 */
-	constructor(app, apiAuthPath, database, accountFile = false, additionalAccountColumns = {}, additionalAccountRegisterSchema = {}) {
+interface OptionsObject {
+	register: boolean;
+	restrictedRegister: ((validation: object) => boolean) | null;
+	allowMultipleSessions: boolean;
+	authTokenStoreDatabase: boolean;
+}
+
+class AuthenticationHelper<U extends { UUID: string }> {
+	app: Application;
+	apiAuthPath: string;
+	database: any;
+	options: OptionsObject;
+	additionalAccountColumns: object;
+	additionalAccountRegisterSchema: object;
+	tokens: Map<string, U>;
+	onLogin?: (token: string, dbentry: U) => void;
+	onRegister?: (userobj: U) => void;
+	constructor(
+		app: Application,
+		apiAuthPath: string,
+		database: any,
+		accountFile = false,
+		additionalAccountColumns = {},
+		additionalAccountRegisterSchema = {}
+	) {
 		this.app = app;
 		this.apiAuthPath = apiAuthPath;
 		this.database = database;
@@ -19,13 +37,16 @@ class AuthenticationHelper {
 		this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
 		this.tokens = new Map();
 	}
-	install(onLogin = () => {}, onRegister = () => {}) {
+	install(onLogin = (token: string, userobj: U) => {}, onRegister = (userobj: U) => {}) {
 		this.onLogin = onLogin;
 		this.onRegister = onRegister;
 		this.database != null && this.setupDatabase();
-		const { router, setAuthHelper } = require('./auth/index');
-		setAuthHelper(this);
-		this.app.use(this.apiAuthPath, router);
+		const authCLSController = new AuthClassController<U>(this);
+		this.app.use(this.apiAuthPath, authCLSController.getRouter());
+
+		// const { router, setAuthHelper } = require('./auth/index');
+		// setAuthHelper(this);
+		// this.app.use(this.apiAuthPath, router);
 	}
 
 	setupDatabase() {
@@ -110,11 +131,7 @@ class AuthenticationHelper {
 		this.database.registerSchema('registerSchema', registerSchema, 'accounts');
 		this.database.registerSchema('loginSchema', loginSchema, 'accounts');
 	}
-	/**
-	 * @param  {String} token
-	 * @param  {Object} user
-	 */
-	async addToken(token, user) {
+	async addToken(token: string, user: U) {
 		if (!this.options.allowMultipleSessions) {
 			if (this.options.authTokenStoreDatabase) {
 				const exist = this.database.get('authtokens').getOne({ UUID: user.UUID });
@@ -135,10 +152,8 @@ class AuthenticationHelper {
 			this.tokens.set(token, user);
 		}
 	}
-	/**
-	 * @param  {String} token
-	 */
-	async removeToken(token) {
+
+	async removeToken(token: string) {
 		if (this.options.authTokenStoreDatabase) {
 			await this.database.get('authtokens').delete({ TOKEN: token });
 		} else {
@@ -146,10 +161,7 @@ class AuthenticationHelper {
 		}
 	}
 
-	/**
-	 * @param  {String} token
-	 */
-	async getUser(token) {
+	async getUser(token: string): Promise<U> {
 		let user = undefined;
 		if (this.options.authTokenStoreDatabase) {
 			const search = await this.database.get('authtokens').getOne({ TOKEN: token });
@@ -167,9 +179,9 @@ class AuthenticationHelper {
 		return this.authenticationFull(() => true);
 	}
 
-	authenticationFull(cb) {
-		return async (req, res, next) => {
-			const token = req.headers['auth-token'] || req.query['auth-token'];
+	authenticationFull(cb: (user: U) => boolean) {
+		return async (req: AuthenticatedRequest<U>, res: Response, next: NextFunction) => {
+			const token = (req.headers['auth-token'] as string) || (req.query['auth-token'] as string);
 			if (token) {
 				if (await this.getUser(token)) {
 					const user = await this.getUser(token);
@@ -193,12 +205,19 @@ class AuthenticationHelper {
 	}
 }
 
+export interface AuthenticatedRequest<U> extends Request {
+	credentials?: {
+		token: string;
+		user: U;
+	};
+}
+
 class AuthenticationError extends Error {
-	constructor(message) {
+	constructor(message: string) {
 		super(message);
 		this.name = this.constructor.name;
 		Error.captureStackTrace(this, this.constructor);
 	}
 }
 
-module.exports = { AuthenticationHelper, AuthenticationError };
+export { AuthenticationHelper, AuthenticationError };

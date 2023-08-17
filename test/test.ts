@@ -1,6 +1,5 @@
-const express = require('express');
-
-const { AuthenticationHelper, ErrorHelper } = require('../src/index');
+import express, { Request, Response } from 'express';
+import { AuthenticationHelper, ErrorHelper } from '../src/index';
 
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.createDatabase('localhost', 'root', '', 'testhelpers');
@@ -56,7 +55,7 @@ authHelper.install(
 
 const errorHelper = new ErrorHelper();
 
-app.get('/', authHelper.authentication(), (req, res) => {
+app.get('/', authHelper.authentication(), (req: Request, res: Response) => {
 	res.json('Auth Route');
 });
 
