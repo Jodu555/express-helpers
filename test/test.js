@@ -9,32 +9,21 @@ database.connect();
 const app = express();
 app.use(express.json());
 
-const authHelper = new AuthenticationHelper(
-	app,
-	'/auth',
-	database,
-	false,
-	{
-		settings: 'varchar(64)',
-		lastLogin: 'TEXT',
-	},
-	{
-		token: {
-			required: true,
-		},
-	}
-);
+const authHelper = new AuthenticationHelper(app, '/auth', database, false, {
+	settings: 'varchar(64)',
+	lastLogin: 'TEXT',
+});
 authHelper.options.register = true;
-authHelper.options.restrictedRegister = (validation) => {
-	console.log(validation);
-	if (validation.success) {
-		if (validation.object.token == 'secretOTP') {
-			delete validation.object.token;
-			return true;
-		}
-	}
-	return false;
-};
+// authHelper.options.restrictedRegister = (validation) => {
+// 	console.log(validation);
+// 	if (validation.success) {
+// 		if (validation.object.token == 'secretOTP') {
+// 			delete validation.object.token;
+// 			return true;
+// 		}
+// 	}
+// 	return false;
+// };
 authHelper.options.authTokenStoreDatabase = true;
 
 authHelper.install(
