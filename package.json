@@ -1,11 +1,12 @@
 {
 	"name": "@jodu555/express-helpers",
-	"version": "1.3.2",
+	"version": "1.3.3",
 	"description": "A Little npm library to help with authentication 404 middlewares and other stuff",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"scripts": {
-		"test": "node test/test.js"
+		"test": "node test/test.js",
+		"build": "tsc"
 	},
 	"repository": {
 		"type": "git",

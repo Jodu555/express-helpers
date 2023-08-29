@@ -12,7 +12,7 @@ export class AuthClassController<U extends { UUID: string }> {
 	}
 
 	getRouter(): Router {
-		console.log(this);
+		// console.log(this);
 
 		const router = express.Router();
 		router.get('/', (req: Request, res: Response) => {
