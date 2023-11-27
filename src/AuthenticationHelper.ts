@@ -21,7 +21,7 @@ class AuthenticationHelper<U extends { UUID: string }> {
 	tokens: Map<string, U>;
 	onLogin?: (token: string, dbentry: U) => void;
 	onRegister?: (userobj: U) => void;
-	onAuthenticated?: (userobj: U) => void;
+	onAuthenticated?: (req: AuthenticatedRequest<U>, userobj: U) => void;
 	constructor(
 		app: Application,
 		apiAuthPath: string,
@@ -38,7 +38,7 @@ class AuthenticationHelper<U extends { UUID: string }> {
 		this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
 		this.tokens = new Map();
 	}
-	install(onLogin = (token: string, userobj: U) => { }, onRegister = (userobj: U) => { }, onAuthenticated = (userobj: U) => { }) {
+	install(onLogin = (token: string, userobj: U) => { }, onRegister = (userobj: U) => { }, onAuthenticated = (req: AuthenticatedRequest<U>, userobj: U) => { }) {
 		this.onLogin = onLogin;
 		this.onRegister = onRegister;
 		this.onAuthenticated = onAuthenticated;
@@ -192,7 +192,7 @@ class AuthenticationHelper<U extends { UUID: string }> {
 							token,
 							user,
 						};
-						this.onAuthenticated?.(user);
+						this.onAuthenticated?.(req, user);
 						next();
 						return;
 					} else {

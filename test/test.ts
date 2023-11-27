@@ -51,9 +51,9 @@ authHelper.install(
 			}
 		);
 	},
-	async (userobj) => {
+	async (req, userobj) => {
 		console.log('OnAuthenticated', userobj);
-
+		console.log(req.ip, req.ips, req.socket.address());
 	}
 );
 
