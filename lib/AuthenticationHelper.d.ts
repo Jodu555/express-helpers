@@ -17,8 +17,9 @@ declare class AuthenticationHelper<U extends {
     tokens: Map<string, U>;
     onLogin?: (token: string, dbentry: U) => void;
     onRegister?: (userobj: U) => void;
+    onAuthenticated?: (req: AuthenticatedRequest<U>, userobj: U) => void;
     constructor(app: Application, apiAuthPath: string, database: any, accountFile?: boolean, additionalAccountColumns?: {}, additionalAccountRegisterSchema?: {});
-    install(onLogin?: (token: string, userobj: U) => void, onRegister?: (userobj: U) => void): void;
+    install(onLogin?: (token: string, userobj: U) => void, onRegister?: (userobj: U) => void, onAuthenticated?: (req: AuthenticatedRequest<U>, userobj: U) => void): void;
     setupDatabase(): void;
     addToken(token: string, user: U): Promise<void>;
     removeToken(token: string): Promise<void>;
