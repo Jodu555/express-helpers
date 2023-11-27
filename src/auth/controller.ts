@@ -1,7 +1,7 @@
+import fs from 'fs';
 import { NextFunction, Request, Response } from 'express';
 import { AuthenticatedRequest, AuthenticationHelper } from '../AuthenticationHelper';
 import { generateUUID } from '../utils';
-const fs = require('fs');
 const bcrypt = require('bcryptjs');
 
 let database: any;

@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+import { AuthenticationError } from './AuthenticationHelper';
 
-const { AuthenticationError } = require('./AuthenticationHelper');
 
 class ErrorHelper {
-	constructor() {}
+	constructor() { }
 	install() {
 		return (err: Error, req: Request, res: Response, next: NextFunction) => {
 			const error = {
@@ -17,7 +17,7 @@ class ErrorHelper {
 				const { Database } = require('@jodu555/mysqlapi');
 				const database = Database.getDatabase();
 				if (err instanceof database.ParsingError) status = 422;
-			} catch (error) {}
+			} catch (error) { }
 
 			if (process.env.NODE_ENV !== 'production') {
 				if (error.message?.includes('notFound')) {

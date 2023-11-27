@@ -1,8 +1,8 @@
+import fs from 'fs';
 import { Application, NextFunction, Request, Response } from 'express';
 import { AuthClassController } from './auth/authClassController';
+import { generateUUID } from './utils';
 
-const fs = require('fs');
-const { generateUUID } = require('./utils');
 
 interface OptionsObject {
 	register: boolean;
@@ -21,6 +21,7 @@ class AuthenticationHelper<U extends { UUID: string }> {
 	tokens: Map<string, U>;
 	onLogin?: (token: string, dbentry: U) => void;
 	onRegister?: (userobj: U) => void;
+	onAuthenticated?: (userobj: U) => void;
 	constructor(
 		app: Application,
 		apiAuthPath: string,
@@ -37,9 +38,10 @@ class AuthenticationHelper<U extends { UUID: string }> {
 		this.additionalAccountRegisterSchema = additionalAccountRegisterSchema;
 		this.tokens = new Map();
 	}
-	install(onLogin = (token: string, userobj: U) => {}, onRegister = (userobj: U) => {}) {
+	install(onLogin = (token: string, userobj: U) => { }, onRegister = (userobj: U) => { }, onAuthenticated = (userobj: U) => { }) {
 		this.onLogin = onLogin;
 		this.onRegister = onRegister;
+		this.onAuthenticated = onAuthenticated;
 		this.database != null && this.setupDatabase();
 		const authCLSController = new AuthClassController<U>(this);
 		this.app.use(this.apiAuthPath, authCLSController.getRouter());
@@ -190,6 +192,7 @@ class AuthenticationHelper<U extends { UUID: string }> {
 							token,
 							user,
 						};
+						this.onAuthenticated?.(user);
 						next();
 						return;
 					} else {

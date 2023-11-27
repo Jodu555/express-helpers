@@ -50,6 +50,10 @@ authHelper.install(
 				lastLogin: Date.now(),
 			}
 		);
+	},
+	async (userobj) => {
+		console.log('OnAuthenticated', userobj);
+
 	}
 );
 
